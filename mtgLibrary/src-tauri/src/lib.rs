@@ -10,9 +10,13 @@ mod database;
 pub fn run() {
     let builder = /*tauri_specta::*/Builder::<tauri::Wry>::new()
         .typ::<data_types::Card>()
+        .typ::<data_types::Deck>()
+        .typ::<data_types::CardQuery>()
+        .typ::<data_types::DeckQuery>()
         .commands(collect_commands![
             database::init_db,
             database::cards::create_or_update_card,
+            database::cards::get_cards,
          ]);
 
     builder
@@ -25,6 +29,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             database::init_db,
             database::cards::create_or_update_card,
+            database::cards::get_cards,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

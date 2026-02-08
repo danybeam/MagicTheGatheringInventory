@@ -10,6 +10,9 @@ async initDb() : Promise<string> {
 },
 async createOrUpdateCard(input: Card) : Promise<Card> {
     return await TAURI_INVOKE("create_or_update_card", { input });
+},
+async getCards(input: CardQuery) : Promise<Card[]> {
+    return await TAURI_INVOKE("get_cards", { input });
 }
 }
 
@@ -23,8 +26,10 @@ async createOrUpdateCard(input: Card) : Promise<Card> {
 
 /** user-defined types **/
 
-export type Card = { id: number | null; name: string; decks: Deck[] }
-export type Deck = { id: number | null; name: string; cards: Card[] }
+export type Card = { id: number | null; name: string; decks: string[] }
+export type CardQuery = { id: number | null; name: string | null; potential_decks: Deck[] }
+export type Deck = { id: number | null; name: string; cards: string[] }
+export type DeckQuery = { id: number | null; name: string | null; potential_cards: Card[] }
 
 /** tauri-specta globals **/
 
