@@ -1,14 +1,19 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use specta_typescript::Typescript;
-use tauri_specta::{/*collect_commands,*/ Builder};
+
+use tauri_specta::{collect_commands, Builder};
 
 mod data_types;
+mod database;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let builder = /*tauri_specta::*/Builder::<tauri::Wry>::new().typ::<data_types::Card>();
-    // Then register them (separated by a comma)
-    //         .commands(collect_commands![hello_world,]);
+    let builder = /*tauri_specta::*/Builder::<tauri::Wry>::new()
+        .typ::<data_types::Card>()
+        .commands(collect_commands![
+            database::init_db,
+            database::cards::create_or_update_card,
+         ]);
 
     builder
         .export(Typescript::default(), "../src/bindings.ts")
@@ -17,7 +22,10 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(builder.invoke_handler())
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![
+            database::init_db,
+            database::cards::create_or_update_card,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
